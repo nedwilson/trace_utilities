@@ -297,7 +297,7 @@ class PlateVerification:
             new_db_version = False
             if plate_object.get("verified"):
                 self.logger.info("For Shot %s, Plate %s has already been verified. Will skip reconciliation."
-                                 % shot_name, plate_name)
+                                 % (shot_name, plate_name))
                 continue
             this_sg_plate = None
             if not plate_object.get("dbobjects"):
@@ -355,7 +355,7 @@ class PlateVerification:
                         if sgp_field_value != vmd_field_value:
                             err_msg_string = "%s in database value of %s does not match %s in " \
                                              "filesystem value of %s!" \
-                                             % (plate_name, field, sgp_field_value, field, vmd_field_value)
+                                             % (field, sgp_field_value, field, vmd_field_value)
                             validate_fields_err_msg.append(err_msg_string)
                 if len(validate_fields_err_msg) > 0:
                     complete_err_msg = '\n'.join(validate_fields_err_msg)
