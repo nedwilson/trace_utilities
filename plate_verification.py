@@ -405,8 +405,12 @@ class PlateVerification:
                 if fs_pfile.get("already_published"):
                     continue
                 self.logger.info("Publishing %s." % fs_pfile["name"])
+                po_int_version = plate_object.get("int_version")
+                if not po_int_version:
+                    self.logger.error("Plate object %s has no integer version number! Defaulting to 1." % plate_name)
+                    po_int_version = 1
                 sg_pfile = sgtk.util.register_publish(self.engine.sgtk, shot_context, fs_pfile["full_path"],
-                                                      fs_pfile["name"], plate_object["int_version"],
+                                                      fs_pfile["name"], po_int_version,
                                                       published_file_type=fs_pfile["published_file_type"]["code"],
                                                       version_entity=this_sg_plate)
                 self.logger.debug("Successfully published %s with database ID %d." % (fs_pfile["name"], sg_pfile["id"]))
