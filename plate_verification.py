@@ -409,10 +409,18 @@ class PlateVerification:
                 if not po_int_version:
                     self.logger.error("Plate object %s has no integer version number! Defaulting to 1." % plate_name)
                     po_int_version = 1
-                sg_pfile = sgtk.util.register_publish(self.engine.sgtk, shot_context, fs_pfile["full_path"],
-                                                      fs_pfile["name"], po_int_version,
-                                                      published_file_type=fs_pfile["published_file_type"]["code"],
-                                                      version_entity=this_sg_plate)
+                publish_loop = True
+                while publish_loop:
+                    try:
+                        sg_pfile = sgtk.util.register_publish(self.engine.sgtk, shot_context, fs_pfile["full_path"],
+                                                              fs_pfile["name"], po_int_version,
+                                                              published_file_type=fs_pfile["published_file_type"]["code"],
+                                                              version_entity=this_sg_plate)
+                        # Handle stupid ConnectionResetErrors, just keep looping until it goes through
+                        publish_loop = False
+                        break
+                    except ConnectionResetError as crerr:
+                        self.logger.warning("Got ConnectionResetError while attempting to publish. Will keep trying.")
                 self.logger.debug("Successfully published %s with database ID %d." % (fs_pfile["name"], sg_pfile["id"]))
                 fs_pfile["already_published"] = True
             if version_update_data.get("sg_path_to_movie"):
