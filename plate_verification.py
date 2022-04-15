@@ -258,7 +258,7 @@ class PlateVerification:
                     version_metadata["sg_last_frame_timecode"] = 0
                     if last_tc_string:
                         last_frame_tc = timecode.Timecode(this_framerate, start_timecode=last_tc_string)
-                        version_metadata["sg_last_frame_timecode"] = int((last_frame_tc+1).frames/this_framerate*1000.0)
+                        version_metadata["sg_last_frame_timecode"] = int(last_frame_tc.frames/this_framerate*1000.0)
                     lastin.close()
                     self.logger.debug("Extracted version metadata: %s" % version_metadata)
                     self.logger.debug("Checking directory %s to make sure there are no missing frames..."
