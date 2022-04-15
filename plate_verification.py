@@ -190,8 +190,8 @@ class PlateVerification:
             if not is_pfile_valid:
                 self.logger.error("Tossing out file %s - does not match naming convention."
                                   % found_files[pfile_name]["full_path"])
-                found_files[pfile_name]["error_message"] = "File is likely in wrong subfolder - does not match any " \
-                                                           "naming convention."
+                found_files[pfile_name]["error_message"] = "File %s is likely in wrong subfolder - does not match any" \
+                                                           " naming convention." % found_files[pfile_name]["full_path"]
                 self.bad_pfiles[pfile_name] = found_files[pfile_name]
             else:
                 version_metadata = None
@@ -211,6 +211,12 @@ class PlateVerification:
                     first_frame_path = os.path.join(imgseq_directory, first_frame_base)
                     last_frame_path = os.path.join(imgseq_directory, last_frame_base)
                     firstin = oiio.ImageInput.open(first_frame_path)
+                    if not firstin:
+                        exr_parse_err = "Unable to open first frame for EXR sequence at %s!" % first_frame_path
+                        found_files[pfile_name]["error_message"] = exr_parse_err
+                        self.bad_pfiles[pfile_name] = found_files[pfile_name]
+                        self.logger.error(exr_parse_err)
+                        continue
                     firstspec = firstin.spec()
                     first_framerate_numerator = firstspec.getattribute("framerate_numerator")
                     first_framerate_denominator = firstspec.getattribute("framerate_denominator")
@@ -241,6 +247,12 @@ class PlateVerification:
                         version_metadata[sop_field_name] = asc_sop_array[sop_idx]
                     firstin.close()
                     lastin = oiio.ImageInput.open(last_frame_path)
+                    if not lastin:
+                        exr_parse_err = "Unable to open first frame for EXR sequence at %s!" % last_frame_path
+                        found_files[pfile_name]["error_message"] = exr_parse_err
+                        self.bad_pfiles[pfile_name] = found_files[pfile_name]
+                        self.logger.error(exr_parse_err)
+                        continue
                     lastspec = lastin.spec()
                     last_tc_string = lastspec.getattribute("frame_absolute_timecode")
                     version_metadata["sg_last_frame_timecode"] = 0
